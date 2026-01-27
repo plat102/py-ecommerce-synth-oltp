@@ -35,7 +35,8 @@ class BaseConfig:
     DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
     # --- Faker setting ---
-
+    LOCALE = 'vi_VN'
+    RANDOM_SEED = 42
 
     # --- Business constants ---
 

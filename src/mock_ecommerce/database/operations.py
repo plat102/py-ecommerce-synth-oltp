@@ -55,7 +55,7 @@ def validate_tables_exist(required_tables: List[str]) -> bool:
 
 
 def create_all_tables() -> None:
-    logger.info("🛠Initializing Database Schema...")
+    logger.info("Initializing Database Schema...")
     statements = get_ddl_statements()
 
     with get_db_connection() as conn:
