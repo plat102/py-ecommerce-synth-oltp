@@ -116,3 +116,21 @@ CREATE TABLE IF NOT EXISTS order_item (
 );
 """
 
+# ===================================================
+# TODO: Index
+# ===================================================
+# _CREATE_INDEXES
+
+DDL_STATEMENTS = [
+    _CREATE_BRAND,
+    _CREATE_CATEGORY,
+    _CREATE_SELLER,
+    _CREATE_PROMOTION,
+    _CREATE_PRODUCT,
+    _CREATE_PROMOTION_PRODUCT,
+    _CREATE_ORDER,
+    _CREATE_ORDER_ITEM
+]
+
+def get_ddl_statements():
+    return DDL_STATEMENTS
