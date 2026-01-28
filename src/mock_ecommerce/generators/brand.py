@@ -2,24 +2,26 @@ import random
 from typing import List, Dict, Any
 from mock_ecommerce.generators.base import BaseGenerator
 from mock_ecommerce.database.ddl import TBL_BRAND
+from mock_ecommerce.schema import BrandSchema
 
 class BrandGenerator(BaseGenerator):
     def __init__(self, volume: int, faker_instance=None):
         super().__init__(volume, faker_instance)
         self.table_name = TBL_BRAND
 
-    def generate(self) -> List[Dict[str, Any]]:
-        data = []
+    def generate(self) -> List[BrandSchema]:
+        data: List[BrandSchema] = []
 
         # Countries
         countries = ['Vietnam', 'China', 'USA', 'Korea', 'Japan', 'Germany']
         weights = [40, 25, 15, 10, 5, 5]  # sum: 100%
 
         for _ in range(self.volume):
-            record = {
+            record: BrandSchema = {
                 "brand_name": self.faker.company(),
-                "country": random.choices(countries, weights=weights, k=1)[0],
-                "created_at": self.faker.date_time_between(start_date='-5y', end_date='now')
+                # "country": random.choices(countries, weights=weights, k=1)[0],
+                "country": self.faker.country(),
+                "created_at": self.faker.date_time_this_decade()
             }
             data.append(record)
 
