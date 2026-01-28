@@ -4,7 +4,7 @@ from psycopg2 import IntegrityError, OperationalError
 
 from mock_ecommerce.database.connection import get_db_connection
 from mock_ecommerce.utils.logger import logger
-from mock_ecommerce.database.ddl import get_ddl_statements
+from mock_ecommerce.database.ddl import get_ddl_statements, ALL_TABLES
 from mock_ecommerce.database.exceptions import (
     DBOperationError,
     DBConstraintError,
@@ -144,3 +144,27 @@ def get_existing_ids(table_name: str, id_column: str, force_refresh: bool = Fals
     _CACHE_FK_ID[cache_key] = ids
     logger.info(f"Cached {len(ids)} IDs from {table_name}.{id_column}. Cache: {_CACHE_FK_ID}")
     return ids
+
+def clean_database(tables: List[str]=ALL_TABLES) -> None:
+    """Truncate tables cascade"""
+    if len(tables) == 0:
+        return
+
+    tables_str = ", ".join(tables)
+    logger.warning(f"Cleaning database: Truncating {tables_str}...")
+
+    with get_db_connection() as conn:
+        try:
+            with conn.cursor() as cur:
+                query = f"TRUNCATE TABLE {tables_str} RESTART IDENTITY CASCADE;"
+                cur.execute(query)
+            conn.commit()
+            logger.info("Database cleaned successfully.")
+
+            _CACHE_FK_ID.clear()
+            logger.info("In-memory ID cache cleared.")
+
+        except Exception as e:
+            conn.rollback()
+            logger.error(f"Failed to clean database: {e}")
+            raise DBOperationError("Clean database failed", original_exception=e)

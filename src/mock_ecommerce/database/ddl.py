@@ -10,6 +10,14 @@ TBL_PRODUCT = "product"
 TBL_PROMOTION_PRODUCT = "promotion_product"
 TBL_ORDER = "order"
 TBL_ORDER_ITEM = "order_item"
+ALL_TABLES = [
+    TBL_BRAND,
+    TBL_CATEGORY,
+    TBL_SELLER,
+    TBL_PROMOTION,
+    TBL_PRODUCT,
+    TBL_PROMOTION_PRODUCT
+]
 
 # ===================================================
 # Independent master & reference

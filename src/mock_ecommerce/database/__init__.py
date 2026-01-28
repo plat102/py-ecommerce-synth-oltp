@@ -4,7 +4,8 @@ from .operations import (
     create_all_tables,
     validate_tables_exist,
     bulk_insert,
-    get_existing_ids
+    get_existing_ids,
+    clean_database
 )
 
 # export public API
@@ -14,5 +15,6 @@ __all__ = [
     'create_all_tables',
     'validate_tables_exist',
     'bulk_insert',
-    'get_existing_ids'
+    'get_existing_ids',
+    'clean_database'
 ]

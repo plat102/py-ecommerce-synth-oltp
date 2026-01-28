@@ -35,10 +35,11 @@ class BaseGenerator(ABC):
             raise ValueError("Table name must be provided for insertion.")
         return bulk_insert(self.table_name, self.records)
 
-    def run(self, table_name: str) -> int:
+    def run(self, table_name: str=None) -> int:
         """Flow: Generate -> Validate -> Insert"""
         logger.info(f"[Generator] Starting generation for table '{table_name}' (Target: {self.volume} rows)...")
-
+        if not table_name:
+            table_name = self.table_name
         try:
             # 1. Generate
             self.records = self.generate()

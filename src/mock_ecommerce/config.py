@@ -40,6 +40,16 @@ class BaseConfig:
     RANDOM_SEED = 42
 
     # --- Business constants ---
+    CATEGORY_MAP = {
+            "Electronics": ["Mobile Phones", "Laptops", "Tablets", "Cameras", "Accessories"],
+            "Fashion": ["Men Clothing", "Women Clothing", "Shoes", "Watches", "Bags"],
+            "Home & Living": ["Furniture", "Decor", "Kitchenware", "Bedding", "Lighting"],
+            "Beauty & Health": ["Skincare", "Makeup", "Supplements", "Personal Care"],
+            "Books": ["Fiction", "Non-fiction", "Education", "Comics"],
+            "Sports": ["Gym", "Running", "Team Sports", "Outdoor"],
+            "Toys": ["Board Games", "Action Figures", "Dolls", "Educational"],
+            "Automotive": ["Car Accessories", "Motorbike Accessories", "Oils & Fluids"]
+        }
     SELLER_TYPES = ['Official', 'Marketplace']
     SELLER_TYPE_WEIGHTS = [0.3, 0.7]
     PROMOTION_TYPES = [promo_type.value for promo_type in PromotionType]
@@ -48,6 +58,20 @@ class BaseConfig:
 
 class DevConfig(BaseConfig):
     ENV_NAME = 'DEV'
+
+    # --- Master Data ---
+    NUM_BRANDS = 20
+    NUM_CATEGORIES = 10
+    NUM_SELLERS = 25
+
+    # --- Reference Data ---
+    NUM_PRODUCTS = 2000
+    PRODUCT_COUNT_RANGE = (60, 100) # Avg 80/seller
+    NUM_PROMOTIONS = 10
+    NUM_PROMO_PRODUCTS = 100
+
+    # --- Transaction Data--
+
 
 def get_config():
     env = os.getenv("ENV_NAME", "dev").upper()
