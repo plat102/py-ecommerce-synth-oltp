@@ -34,3 +34,18 @@ class ProductSchema(TypedDict):
     rating: float
     is_active: bool
     created_at: datetime
+
+class PromotionSchema(TypedDict):
+    promotion_name: str
+    promotion_type: str
+    discount_type: str
+    discount_value: Decimal
+    start_date: date
+    end_date: date
+    created_at: datetime
+
+class PromotionProduct(TypedDict):
+    promo_product_id: int
+    promotion_id: int
+    product_id: int
+    created_at: datetime

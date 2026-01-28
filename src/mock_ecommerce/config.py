@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 from mock_ecommerce.utils.logger import setup_logging
+from mock_ecommerce.constants import DiscountType, PromotionType
 
 # ===================================================
 # Setup env file
@@ -41,6 +42,9 @@ class BaseConfig:
     # --- Business constants ---
     SELLER_TYPES = ['Official', 'Marketplace']
     SELLER_TYPE_WEIGHTS = [0.3, 0.7]
+    PROMOTION_TYPES = [promo_type.value for promo_type in PromotionType]
+    DISCOUNT_TYPES = [DiscountType.PERCENTAGE.value, DiscountType.FIXED_AMOUNT.value]
+    DISCOUNT_TYPE_WEIGHTS = [0.7, 0.3]
 
 class DevConfig(BaseConfig):
     ENV_NAME = 'DEV'
