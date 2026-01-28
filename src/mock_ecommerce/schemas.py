@@ -1,5 +1,6 @@
 from typing import TypedDict, Optional
 from datetime import datetime, date
+from decimal import Decimal
 
 class BrandSchema(TypedDict):
     # brand_id: int
@@ -15,10 +16,21 @@ class CategorySchema(TypedDict):
     created_at: datetime
 
 class SellerSchema(TypedDict):
-    # seller_id là SERIAL
     seller_name: str
     join_date: date
     seller_type: str
     rating: float
     country: str
+    created_at: datetime
+
+class ProductSchema(TypedDict):
+    product_name: str
+    category_id: int
+    brand_id: int
+    seller_id: int
+    price: Decimal
+    discount_price: Decimal
+    stock_qty: int
+    rating: float
+    is_active: bool
     created_at: datetime
