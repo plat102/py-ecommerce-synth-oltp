@@ -37,9 +37,9 @@ class BaseGenerator(ABC):
 
     def run(self, table_name: str=None) -> int:
         """Flow: Generate -> Validate -> Insert"""
-        logger.info(f"[Generator] Starting generation for table '{table_name}' (Target: {self.volume} rows)...")
         if not table_name:
             table_name = self.table_name
+        logger.info(f"[Generator] Starting generation for table '{table_name}' (Target: {self.volume} rows)...")
         try:
             # 1. Generate
             self.records = self.generate()
