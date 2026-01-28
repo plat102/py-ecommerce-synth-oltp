@@ -43,7 +43,7 @@ class BaseGenerator(ABC):
             # 1. Generate
             self.records = self.generate()
             count = len(self.records)
-            logger.info(f"   ↳ Generated {count} records in memory.")
+            logger.info(f"\tGenerated {count} records in memory.")
 
             # 2. Validate
             if self.validate():

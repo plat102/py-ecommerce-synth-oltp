@@ -39,7 +39,8 @@ class BaseConfig:
     RANDOM_SEED = 42
 
     # --- Business constants ---
-
+    SELLER_TYPES = ['Official', 'Marketplace']
+    SELLER_TYPE_WEIGHTS = [0.3, 0.7]
 
 class DevConfig(BaseConfig):
     ENV_NAME = 'DEV'
