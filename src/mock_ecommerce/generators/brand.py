@@ -2,7 +2,7 @@ import random
 from typing import List, Dict, Any
 from mock_ecommerce.generators.base import BaseGenerator
 from mock_ecommerce.database.ddl import TBL_BRAND
-from mock_ecommerce.schema import BrandSchema
+from mock_ecommerce.schemas import BrandSchema
 
 class BrandGenerator(BaseGenerator):
     def __init__(self, volume: int, faker_instance=None):
