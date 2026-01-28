@@ -1,23 +1,15 @@
-from typing import List
+from typing import List, Dict
 from mock_ecommerce.generators.base import BaseGenerator
 from mock_ecommerce.database.ddl import TBL_CATEGORY
 from mock_ecommerce.schemas import CategorySchema
-from mock_ecommerce.database import bulk_insert, get_existing_ids
+from mock_ecommerce.database import bulk_insert, get_db_connection
 from mock_ecommerce.utils.logger import logger
+from mock_ecommerce.config import settings
 
 class CategoryGenerator(BaseGenerator):
     def __init__(self, volume_l1: int=None, volume_l2: int=None, faker_instance=None):
         # Static list for category name
-        self.category_map = {
-            "Electronics": ["Mobile Phones", "Laptops", "Tablets", "Cameras", "Accessories"],
-            "Fashion": ["Men Clothing", "Women Clothing", "Shoes", "Watches", "Bags"],
-            "Home & Living": ["Furniture", "Decor", "Kitchenware", "Bedding", "Lighting"],
-            "Beauty & Health": ["Skincare", "Makeup", "Supplements", "Personal Care"],
-            "Books": ["Fiction", "Non-fiction", "Education", "Comics"],
-            "Sports": ["Gym", "Running", "Team Sports", "Outdoor"],
-            "Toys": ["Board Games", "Action Figures", "Dolls", "Educational"],
-            "Automotive": ["Car Accessories", "Motorbike Accessories", "Oils & Fluids"]
-        }
+        self.category_map = settings.CATEGORY_MAP
         # Calculate default vols
         max_l1 = len(self.category_map)
         self.volume_l1 = volume_l1 if volume_l1 is not None else max_l1
@@ -28,89 +20,108 @@ class CategoryGenerator(BaseGenerator):
             selected_keys = list(self.category_map.keys())[:self.volume_l1]
             self.volume_l2 = sum(len(self.category_map[k]) for k in selected_keys)
 
+        if volume_l1 > len(self.category_map):
+            logger.warning(
+                f"Requested volume_l1={volume_l1} but only "
+                f"{len(self.category_map)} main categories available to use."
+            )
+
         total_volume = self.volume_l1 + self.volume_l2
         super().__init__(total_volume, faker_instance)
         self.table_name = TBL_CATEGORY
 
 
-    def generate(self) -> List[CategorySchema]:
+    def generate(self, specific_names: List[str] = None) -> List[CategorySchema]:
         """Gen parent category"""
         records: List[CategorySchema] = []
-        main_categories = list(self.category_map.keys())
 
-        # Limit on volume requested
-        limit = min(self.volume_l1, len(main_categories))
-        selected_categories = main_categories[:limit]
+        if specific_names is not None:
+            target_names = specific_names
+        else:
+            all_names = list(self.category_map.keys())
+            limit = min(self.volume_l1, len(all_names))
+            target_names = all_names[:limit]
 
-        for main_name in selected_categories:
-            created_at = self.faker.date_time_between(start_date='-5y', end_date='-2y')
-
+        for main_name in target_names:
             record: CategorySchema = {
                 "category_name": main_name,
                 "parent_category_id": None,
                 "level": 1,
-                "created_at": created_at
+                "created_at": self.faker.date_time_between(start_date='-5y', end_date='-2y')
             }
             records.append(record)
 
         return records
 
-    def generate_level_2(self, parent_ids: List[int]) -> List[CategorySchema]:
+    def generate_level_2(self, parent_map: Dict[str, int]) -> List[CategorySchema]:
         """Gen sub category
         Args:
             parent_ids: List of category_id from DB where level=1.
             parent_names: List of category_name corresponding to IDs (to map subtypes).
         """
         records: List[CategorySchema] = []
-        main_categories = list(self.category_map.keys())
-        sorted_parent_ids = sorted(parent_ids)
-        for i, parent_id in enumerate(sorted_parent_ids):
-            # round-robin map parent id to name
-            parent_name = main_categories[i % len(main_categories)]
-            sub_categories = list(self.category_map.get(parent_name, []))
 
-            for sub_name in sub_categories:
-                # Stop if volume reach
-                if self.volume_l2 and len(records) >= self.volume_l2:
+        for main_name, parent_id in parent_map.items():
+            sub_list = self.category_map.get(main_name, [])
+            for sub_name in sub_list:
+                if 0 < self.volume_l2 <= len(records):
                     return records
-
-                # Assume created < parent created_at
-                created_at = self.faker.date_time_between(start_date='-2y', end_date='now')
 
                 record: CategorySchema = {
                     "category_name": sub_name,
                     "parent_category_id": parent_id,
                     "level": 2,
-                    "created_at": created_at
+                    "created_at": self.faker.date_time_between(start_date='-2y', end_date='now')
                 }
                 records.append(record)
-
         return records
-
 
 def generate_categories_full(gen: CategoryGenerator):
     # ==============================
+    # Fetch current data
+    # ==============================
+    existing_l1 = set()
+    existing_l2 = set()
+    parent_map = {} # {name: id}
+
+    with get_db_connection() as conn:
+        with conn.cursor() as cur:
+            # Load L1
+            cur.execute(f"SELECT category_name, category_id FROM {TBL_CATEGORY} WHERE level = 1")
+            for row in cur.fetchall():
+                existing_l1.add(row[0])
+                parent_map[row[0]] = row[1]
+            # Load L2
+            cur.execute(f"SELECT category_name FROM {TBL_CATEGORY} WHERE level = 2")
+            existing_l2 = {row[0] for row in cur.fetchall()}
+
+    # ==============================
     # Insert level 1 (main)
     # ==============================
-    logger.info("[Category] Phase 1: Generating Level 1...")
-    l1_records = gen.generate()
-    bulk_insert(TBL_CATEGORY, l1_records)
+    target_l1 = list(gen.category_map.keys())[:gen.volume_l1]
+    missing_l1 = [n for n in target_l1 if n not in existing_l1]
+
+    if missing_l1:
+        logger.info(f"[Category] Generating {len(missing_l1)} Level 1...")
+        bulk_insert(TBL_CATEGORY, gen.generate(specific_names=missing_l1))
+        # Refresh parent_map
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(f"SELECT category_name, category_id FROM {TBL_CATEGORY} WHERE level = 1")
+                parent_map = {row[0]: row[1] for row in cur.fetchall()}
 
     # ==============================
-    # Insert level 2 (full)
+    # Insert level 2
     # ==============================
-    logger.info("[Category] Phase 2: Generating Level 2...")
-    # --- fetch inserted IDs ---
-    parent_ids = get_existing_ids(TBL_CATEGORY, 'category_id', force_refresh=True)
-    if not parent_ids:
-        logger.warning("No parent IDs found. Skipping Level 2 generation.")
-        return len(l1_records)
+    l2_candidates = gen.generate_level_2(parent_map)
+    new_l2 = [r for r in l2_candidates if r['category_name'] not in existing_l2]
 
-    # --- insert ---
-    l2_records = gen.generate_level_2(parent_ids)
-    bulk_insert(TBL_CATEGORY, l2_records)
+    if new_l2:
+        logger.info(f"[Category] Generating {len(new_l2)} NEW Level 2...")
+        bulk_insert(TBL_CATEGORY, new_l2)
 
-    total = len(l1_records) + len(l2_records)
+    total = len(missing_l1) + len(new_l2)
+    logger.info(f"[Category] Finished. New records: {total}")
     return total
 
 if __name__ == "__main__":
