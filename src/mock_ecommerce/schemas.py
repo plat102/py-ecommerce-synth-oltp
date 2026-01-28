@@ -49,3 +49,8 @@ class PromotionProduct(TypedDict):
     promotion_id: int
     product_id: int
     created_at: datetime
+
+class PromotionProductSchema(TypedDict):
+    promotion_id: int
+    product_id: int
+    created_at: datetime
