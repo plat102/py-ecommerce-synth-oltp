@@ -79,8 +79,8 @@ python src/main.py
 ### 3. Run Specific Stage
 Run specific parts of the pipeline independently.
 
-* **Options**: `setup`, `master`, `catalog`, `transaction`
+* **Options**: `setup`, `master`, `reference`, `all`
 ```bash
-# Example: Only generate new orders
-python src/main.py --stage transaction
+# Example: Only generate new master data
+python src/main.py --stage master
 ```
