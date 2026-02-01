@@ -1,6 +1,12 @@
 # E-commerce OLTP Data Generator
 
-A high-performance, modular synthetic data generation pipeline designed for E-commerce OLTP systems. This tool generates realistic, relationally consistent data using Python and loads it into PostgreSQL.
+A synthetic data generation pipeline designed for E-commerce OLTP system.
+This tool generates realistic, relationally consistent data using Python and loads it into PostgreSQL.
+
+![Python](https://img.shields.io/badge/python-3.12+-blue.svg)
+![Poetry](https://img.shields.io/badge/dependency-poetry-purple)
+![PostgreSQL](https://img.shields.io/badge/postgresql-12+-316192.svg)
+![Faker](https://img.shields.io/badge/faker-synthetic_data-orange.svg)
 
 ---
 ## Overview
@@ -78,12 +84,3 @@ Run specific parts of the pipeline independently.
 # Example: Only generate new orders
 python src/main.py --stage transaction
 ```
-
-### Data Volume Configuration
-
-Data volumes are managed in `src/mock_ecommerce/config.py`.
-
-* **DEV Profile**: Hardcoded volumes (20 Brands, 2000 Products, 50 Orders)
-
-Change the environment by setting `APP_ENV=PROD` in `.env`.
-
