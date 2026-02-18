@@ -13,7 +13,7 @@ def main():
         "--stage",
         type=str,
         default="all",
-        choices=["all", "master", "reference", "clean"],
+        choices=["all", "master", "reference", "clean","transactional"],
         help="Select stage to run. Default: all"
     )
     args = parser.parse_args()

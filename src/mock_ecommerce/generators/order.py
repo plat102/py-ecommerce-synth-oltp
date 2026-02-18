@@ -22,8 +22,8 @@ class OrderGenerator(BaseGenerator):
             logger.warning('No seller_ids found.')
 
         # prepare date data
-        self.start_date = datetime.combine(date.today(), datetime.min.time())
-        self.end_date = datetime.combine(date.today(), datetime.max.time())
+        self.start_date = datetime.combine(settings.ORDER_START_DATE, datetime.min.time())
+        self.end_date = datetime.combine(settings.ORDER_END_DATE, datetime.max.time())
         self.date_range_seconds = int(
             (self.end_date - self.start_date).total_seconds()
         )

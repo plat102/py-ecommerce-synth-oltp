@@ -5,9 +5,10 @@ from mock_ecommerce.generators import (
     SellerGenerator,
     PromotionGenerator,
     ProductGenerator,
-    PromotionProductGenerator
+    PromotionProductGenerator,
+    OrderGenerator
 )
-from mock_ecommerce.database import get_existing_ids
+from mock_ecommerce.database import get_existing_ids, execute_query
 from mock_ecommerce.database.ddl import TBL_BRAND, TBL_SELLER, TBL_CATEGORY, TBL_PROMOTION, TBL_PRODUCT
 from mock_ecommerce.utils.logger import logger
 
@@ -65,3 +66,19 @@ def generate_promotion_product():
     gen = PromotionProductGenerator(volume=volume)
     inserted = gen.run()
     return inserted
+
+def generate_order():
+    logger.info(f"[Task] Generating Orders (Target: {settings.NUM_ORDERS})")
+    gen = OrderGenerator(volume=settings.NUM_ORDERS)
+    inserted = gen.run()
+    return inserted
+
+def generate_order_item():
+    logger.info("[Task] Generating Orders (SQL)")
+    with open('sql/generate_order_items.sql') as f:
+        execute_query(f.read())
+
+def update_order_total():
+    logger.info("[Task] Updating Order Totals (SQL)")
+    with open('sql/update_order_totals.sql') as f:
+        execute_query(f.read())

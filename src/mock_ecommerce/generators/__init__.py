@@ -4,6 +4,7 @@ from .seller import SellerGenerator
 from .product import ProductGenerator
 from .promotion import PromotionGenerator
 from .promotion_product import PromotionProductGenerator
+from .order import OrderGenerator
 
 __all__ = [
     'BrandGenerator',
@@ -12,5 +13,6 @@ __all__ = [
     'SellerGenerator',
     'ProductGenerator',
     'PromotionGenerator',
-    'PromotionProductGenerator'
+    'PromotionProductGenerator',
+    'OrderGenerator',
 ]
