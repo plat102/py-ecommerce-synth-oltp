@@ -1,8 +1,10 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from datetime import date
+
 from mock_ecommerce.utils.logger import setup_logging
-from mock_ecommerce.constants import DiscountType, PromotionType
+from mock_ecommerce.constants import DiscountType, PromotionType, OrderStatus
 
 # ===================================================
 # Setup env file
@@ -56,6 +58,20 @@ class BaseConfig:
     DISCOUNT_TYPES = [DiscountType.PERCENTAGE.value, DiscountType.FIXED_AMOUNT.value]
     DISCOUNT_TYPE_WEIGHTS = [0.7, 0.3]
 
+    # Transactional data
+    ORDER_STATUS = [
+        OrderStatus.PLACED.value,
+        OrderStatus.PAID.value,
+        OrderStatus.SHIPPED.value,
+        OrderStatus.DELIVERED.value,
+        OrderStatus.CANCELLED.value,
+        OrderStatus.RETURNED.value
+    ]
+    ORDER_STATUS_WEIGHTS = [0.05, 0.04, 0.11, 0.70, 0.07, 0.03]
+
+    ORDER_START_DATE = date(2025, 8, 1)
+    ORDER_END_DATE = date(2025, 10, 31)
+
 class DevConfig(BaseConfig):
     ENV_NAME = 'DEV'
 
@@ -71,7 +87,8 @@ class DevConfig(BaseConfig):
     NUM_PROMO_PRODUCTS = 100
 
     # --- Transaction Data--
-
+    NUM_ORDERS = 50000
+    NUM_ORDER_ITEMS_RANGE = (2, 4)
 
 def get_config():
     env = os.getenv("ENV_NAME", "dev").upper()

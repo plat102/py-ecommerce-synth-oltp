@@ -54,3 +54,19 @@ class PromotionProductSchema(TypedDict):
     promotion_id: int
     product_id: int
     created_at: datetime
+
+class OrderSchema(TypedDict):
+    order_date: datetime
+    seller_id: int
+    status: str
+    total_amount: Decimal
+    created_at: datetime
+
+class OrderItemSchema(TypedDict):
+    order_id: int
+    product_id: int
+    order_date: datetime
+    quantity: int
+    unit_price: Decimal
+    subtotal: Decimal
+    created_at: datetime

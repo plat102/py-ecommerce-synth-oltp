@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS "order" (
     order_id SERIAL PRIMARY KEY,
     order_date TIMESTAMP,
     seller_id INT REFERENCES seller(seller_id),
-    status VARCHAR(20), -- 'PLACED', 'DELIVERED', 'CANCELLED',...
+    status VARCHAR(20)  CHECK (status IN ('PLACED', 'PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'RETURNED')),
     total_amount DECIMAL(12,2),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -114,20 +114,30 @@ CREATE TABLE IF NOT EXISTS "order" (
 
 _CREATE_ORDER_ITEM = """
 CREATE TABLE IF NOT EXISTS order_item (
-    order_item_id SERIAL PRIMARY KEY,
+    order_item_id BIGSERIAL PRIMARY KEY,
     order_id INT REFERENCES "order"(order_id),
     product_id INT REFERENCES product(product_id),
     quantity INT CHECK (quantity > 0),
     unit_price DECIMAL(12,2), -- Snapshot price
     subtotal DECIMAL(12,2),
+    order_date TIMESTAMP, -- Denormalize for partitioning later
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 """
 
 # ===================================================
-# TODO: Index
+# Index
 # ===================================================
-# _CREATE_INDEXES
+_CREATE_INDEXES = """
+    -- FKs index
+    CREATE INDEX IF NOT EXISTS idx_product_seller ON product(seller_id);
+    CREATE INDEX IF NOT EXISTS idx_product_category ON product(category_id);
+    CREATE INDEX IF NOT EXISTS idx_order_seller ON "order"(seller_id);
+    CREATE INDEX IF NOT EXISTS idx_order_item_order ON order_item(order_id);
+    CREATE INDEX IF NOT EXISTS idx_order_item_product ON order_item(product_id);
+        
+    -- Optimization index
+"""
 
 DDL_STATEMENTS = [
     _CREATE_BRAND,
