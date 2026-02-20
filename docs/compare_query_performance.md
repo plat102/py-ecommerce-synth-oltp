@@ -47,5 +47,6 @@ After:
 ![q7_analysis.png](images/q7_analysis.png)
 
 #### 8. Products Sold per Seller
-
-
+![q8_explain_plan_1771605676335.svg](images/q8_explain_plan_1771605676335.svg)
+![q8_plan.png](images/q8_plan.png)
+![q8_analysis.png](images/q8_analysis.png)
