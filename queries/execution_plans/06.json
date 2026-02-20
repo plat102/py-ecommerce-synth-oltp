@@ -1,0 +1,193 @@
+[
+  {
+    "Plan": {
+      "Node Type": "Sort",
+      "Parallel Aware": false,
+      "Async Capable": false,
+      "Actual Startup Time": 203.989,
+      "Actual Total Time": 212.757,
+      "Actual Rows": 25.00,
+      "Actual Loops": 1,
+      "Disabled": false,
+      "Sort Key": ["(sum(o.total_amount)) DESC"],
+      "Sort Method": "quicksort",
+      "Sort Space Used": 27,
+      "Sort Space Type": "Memory",
+      "Plans": [
+        {
+          "Node Type": "Aggregate",
+          "Strategy": "Sorted",
+          "Partial Mode": "Finalize",
+          "Parent Relationship": "Outer",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Actual Startup Time": 203.906,
+          "Actual Total Time": 212.742,
+          "Actual Rows": 25.00,
+          "Actual Loops": 1,
+          "Disabled": false,
+          "Group Key": ["s.seller_id"],
+          "Plans": [
+            {
+              "Node Type": "Gather Merge",
+              "Parent Relationship": "Outer",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Actual Startup Time": 203.895,
+              "Actual Total Time": 212.695,
+              "Actual Rows": 75.00,
+              "Actual Loops": 1,
+              "Disabled": false,
+              "Workers Planned": 2,
+              "Workers Launched": 2,
+              "Plans": [
+                {
+                  "Node Type": "Sort",
+                  "Parent Relationship": "Outer",
+                  "Parallel Aware": false,
+                  "Async Capable": false,
+                  "Actual Startup Time": 187.294,
+                  "Actual Total Time": 187.298,
+                  "Actual Rows": 25.00,
+                  "Actual Loops": 3,
+                  "Disabled": false,
+                  "Sort Key": ["s.seller_id"],
+                  "Sort Method": "quicksort",
+                  "Sort Space Used": 28,
+                  "Sort Space Type": "Memory",
+                  "Workers": [
+                    {
+                      "Worker Number": 0,
+                      "Sort Method": "quicksort",
+                      "Sort Space Used": 28,
+                      "Sort Space Type": "Memory"
+                    },
+                    {
+                      "Worker Number": 1,
+                      "Sort Method": "quicksort",
+                      "Sort Space Used": 28,
+                      "Sort Space Type": "Memory"
+                    }
+                  ],
+                  "Plans": [
+                    {
+                      "Node Type": "Aggregate",
+                      "Strategy": "Hashed",
+                      "Partial Mode": "Partial",
+                      "Parent Relationship": "Outer",
+                      "Parallel Aware": false,
+                      "Async Capable": false,
+                      "Actual Startup Time": 187.254,
+                      "Actual Total Time": 187.264,
+                      "Actual Rows": 25.00,
+                      "Actual Loops": 3,
+                      "Disabled": false,
+                      "Group Key": ["s.seller_id"],
+                      "HashAgg Batches": 1,
+                      "Peak Memory Usage": 40,
+                      "Disk Usage": 0,
+                      "Workers": [
+                        {
+                          "Worker Number": 0,
+                          "HashAgg Batches": 1,
+                          "Peak Memory Usage": 40,
+                          "Disk Usage": 0
+                        },
+                        {
+                          "Worker Number": 1,
+                          "HashAgg Batches": 1,
+                          "Peak Memory Usage": 40,
+                          "Disk Usage": 0
+                        }
+                      ],
+                      "Plans": [
+                        {
+                          "Node Type": "Hash Join",
+                          "Parent Relationship": "Outer",
+                          "Parallel Aware": false,
+                          "Async Capable": false,
+                          "Join Type": "Inner",
+                          "Actual Startup Time": 6.521,
+                          "Actual Total Time": 129.620,
+                          "Actual Rows": 303492.33,
+                          "Actual Loops": 3,
+                          "Disabled": false,
+                          "Inner Unique": true,
+                          "Hash Cond": "(o.seller_id = s.seller_id)",
+                          "Workers": [
+                          ],
+                          "Plans": [
+                            {
+                              "Node Type": "Seq Scan",
+                              "Parent Relationship": "Outer",
+                              "Parallel Aware": true,
+                              "Async Capable": false,
+                              "Relation Name": "order",
+                              "Alias": "o",
+                              "Actual Startup Time": 6.482,
+                              "Actual Total Time": 77.395,
+                              "Actual Rows": 303492.33,
+                              "Actual Loops": 3,
+                              "Disabled": false,
+                              "Filter": "((order_date >= '2025-10-01 00:00:00'::timestamp without time zone) AND (order_date < '2025-11-01 00:00:00'::timestamp without time zone))",
+                              "Rows Removed by Filter": 596508,
+                              "Workers": [
+                              ]
+                            },
+                            {
+                              "Node Type": "Hash",
+                              "Parent Relationship": "Inner",
+                              "Parallel Aware": false,
+                              "Async Capable": false,
+                              "Actual Startup Time": 0.025,
+                              "Actual Total Time": 0.026,
+                              "Actual Rows": 25.00,
+                              "Actual Loops": 3,
+                              "Disabled": false,
+                              "Hash Buckets": 1024,
+                              "Original Hash Buckets": 1024,
+                              "Hash Batches": 1,
+                              "Original Hash Batches": 1,
+                              "Peak Memory Usage": 10,
+                              "Workers": [
+                              ],
+                              "Plans": [
+                                {
+                                  "Node Type": "Seq Scan",
+                                  "Parent Relationship": "Outer",
+                                  "Parallel Aware": false,
+                                  "Async Capable": false,
+                                  "Relation Name": "seller",
+                                  "Alias": "s",
+                                  "Actual Startup Time": 0.014,
+                                  "Actual Total Time": 0.016,
+                                  "Actual Rows": 25.00,
+                                  "Actual Loops": 3,
+                                  "Disabled": false,
+                                  "Workers": [
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Planning": {
+      "Memory Used": 54,
+      "Memory Allocated": 64
+    },
+    "Planning Time": 0.478,
+    "Triggers": [
+    ],
+    "Execution Time": 212.842
+  }
+]

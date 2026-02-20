@@ -1,0 +1,101 @@
+[
+  {
+    "Plan": {
+      "Node Type": "Limit",
+      "Parallel Aware": false,
+      "Async Capable": false,
+      "Startup Cost": 69207.41,
+      "Total Cost": 69207.53,
+      "Plan Rows": 1,
+      "Plan Width": 35,
+      "Actual Startup Time": 291.005,
+      "Actual Total Time": 299.102,
+      "Actual Rows": 1.00,
+      "Actual Loops": 1,
+      "Disabled": false,
+      "Plans": [
+        {
+          "Node Type": "Gather Merge",
+          "Parent Relationship": "Outer",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 69207.41,
+          "Total Cost": 381009.25,
+          "Plan Rows": 2677181,
+          "Plan Width": 35,
+          "Actual Startup Time": 291.003,
+          "Actual Total Time": 299.099,
+          "Actual Rows": 1.00,
+          "Actual Loops": 1,
+          "Disabled": false,
+          "Workers Planned": 2,
+          "Workers Launched": 2,
+          "Plans": [
+            {
+              "Node Type": "Sort",
+              "Parent Relationship": "Outer",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Startup Cost": 68207.39,
+              "Total Cost": 70996.12,
+              "Plan Rows": 1115492,
+              "Plan Width": 35,
+              "Actual Startup Time": 275.433,
+              "Actual Total Time": 275.434,
+              "Actual Rows": 1.00,
+              "Actual Loops": 3,
+              "Disabled": false,
+              "Sort Key": ["total_amount DESC"],
+              "Sort Method": "top-N heapsort",
+              "Sort Space Used": 25,
+              "Sort Space Type": "Memory",
+              "Workers": [
+                {
+                  "Worker Number": 0,
+                  "Sort Method": "top-N heapsort",
+                  "Sort Space Used": 25,
+                  "Sort Space Type": "Memory"
+                },
+                {
+                  "Worker Number": 1,
+                  "Sort Method": "top-N heapsort",
+                  "Sort Space Used": 25,
+                  "Sort Space Type": "Memory"
+                }
+              ],
+              "Plans": [
+                {
+                  "Node Type": "Seq Scan",
+                  "Parent Relationship": "Outer",
+                  "Parallel Aware": true,
+                  "Async Capable": false,
+                  "Relation Name": "order",
+                  "Alias": "order",
+                  "Startup Cost": 0.00,
+                  "Total Cost": 62629.93,
+                  "Plan Rows": 1115492,
+                  "Plan Width": 35,
+                  "Actual Startup Time": 6.145,
+                  "Actual Total Time": 97.559,
+                  "Actual Rows": 900000.00,
+                  "Actual Loops": 3,
+                  "Disabled": false,
+                  "Workers": [
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "Planning": {
+      "Memory Used": 15,
+      "Memory Allocated": 16
+    },
+    "Planning Time": 0.116,
+    "Triggers": [
+    ],
+    "Execution Time": 299.156
+  }
+]
