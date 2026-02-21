@@ -50,3 +50,45 @@ After:
 ![q8_explain_plan_1771605676335.svg](images/q8_explain_plan_1771605676335.svg)
 ![q8_plan.png](images/q8_plan.png)
 ![q8_analysis.png](images/q8_analysis.png)
+
+### Create partition
+
+Run script: [create_partitions.sql](../sql/create_partitions.sql)
+```shell
+[2026-02-21 15:40:28] completed in 5 ms
+[2026-02-21 15:40:28] ecommerce_oltp.public> CREATE TABLE order_2025_10 PARTITION OF order_partitioned
+                                                 FOR VALUES FROM ('2025-10-01') TO ('2025-11-01')
+[2026-02-21 15:40:28] completed in 4 ms
+[2026-02-21 15:40:28] ecommerce_oltp.public> CREATE TABLE order_item_partitioned (
+                                                 order_item_id BIGSERIAL,
+                                                 order_id INT NOT NULL,
+                                                 product_id INT NOT NULL,
+                                                 order_date TIMESTAMP NOT NULL,
+                                                 quantity INT NOT NULL,
+                                                 unit_price NUMERIC(10,2) NOT NULL,
+                                                 subtotal NUMERIC(12,2) NOT NULL,
+                                                 created_at TIMESTAMP DEFAULT NOW(),
+                                                 CONSTRAINT order_item_part_pkey PRIMARY KEY (order_item_id, order_date)
+                                             ) PARTITION BY RANGE (order_date)
+[2026-02-21 15:40:28] completed in 5 ms
+[2026-02-21 15:40:28] ecommerce_oltp.public> CREATE TABLE order_item_2025_08 PARTITION OF order_item_partitioned
+                                                 FOR VALUES FROM ('2025-08-01') TO ('2025-09-01')
+[2026-02-21 15:40:28] completed in 5 ms
+[2026-02-21 15:40:28] ecommerce_oltp.public> CREATE TABLE order_item_2025_09 PARTITION OF order_item_partitioned
+                                                 FOR VALUES FROM ('2025-09-01') TO ('2025-10-01')
+```
+
+#### Migrate from generated data
+Script: [migrate_to_partitions.sql](../sql/migrate_to_partitions.sql)
+
+```shell
+[2026-02-21 15:46:44] ecommerce_oltp.public> INSERT INTO order_partitioned (order_id, order_date, seller_id, status, total_amount, created_at)
+                                             SELECT order_id, order_date, seller_id, status, total_amount, created_at
+                                             FROM "order"
+[2026-02-21 15:46:59] 2,700,000 rows affected in 15 s 377 ms
+[2026-02-21 15:46:59] ecommerce_oltp.public> INSERT INTO order_item_partitioned (order_item_id, order_id, product_id, order_date, quantity, unit_price, subtotal, created_at)
+                                             SELECT order_item_id, order_id, product_id, order_date, quantity, unit_price, subtotal, created_at
+                                             FROM order_item
+[2026-02-21 15:47:11] 8,099,837 rows affected in 11 s 528 ms
+```
+### Create indexes
